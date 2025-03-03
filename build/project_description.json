@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "real_time_stats",
-    "project_version":    "8a8d85c1-dirty",
+    "project_version":    "1584885",
     "project_path":       "D:/Documents/MyWorkspaces/Espressif/Espressif_RTOS_Demo",
     "idf_path":           "C:/Sw/ESP",
     "build_dir":          "D:/Documents/MyWorkspaces/Espressif/Espressif_RTOS_Demo/build",
