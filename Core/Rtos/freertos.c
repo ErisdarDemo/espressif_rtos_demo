@@ -23,7 +23,8 @@
 #include "freertos/FreeRTOSConfig.h"
 #include "freertos/task.h"
 
-//Project Includes
+//Project Includes	
+#include "../Rtos/freertos.h"						/* @open 	clean that shit up				  */
 #include "../main.h"
 
 
@@ -158,15 +159,10 @@ void sysTask(void *argument) {
 		printf("Calling System Task\n\r");
 
 		//Wiggle
-#ifdef USES_STM32
-		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-#endif
+	    //@open
 
-#ifdef USES_STM32
 		//Refresh
-		stat = HAL_WWDG_Refresh(&hwwdg);
-		Error_Catch(stat);
-#endif
+		//@open refresh WDT
 
 		//Console Sync
 		printf("\n");
@@ -203,11 +199,8 @@ void dataTask(void *argument) {
 		printf("Calling Data Task\n\r");
 
 		//Latch
-#ifdef USES_STM32_HAL_TIMER
-		timer_val = __HAL_TIM_GetCounter(&htim1);	/* grab current				                  */
-#else
-		timer_val = devTimerVal++;
-#endif
+		timer_val = devTimerVal++;					/* @open grab timer value					  */
+
 		//Print
 		printf("Timer: 0x%"PRIu32"\n", timer_val);
 		

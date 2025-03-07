@@ -5,9 +5,18 @@
  *
  *  @author   Justin Reina, Firmware Engineer
  *  @created  3/2/25
- *  @last rev 3/5/25
+ *  @last rev 3/6/25
  *
  *   @section 	Opens
+ *		#ifdefs here
+ *		CMakeLists reloc
+ *		vTaskDelay to cmsis wrappwea
+ *		Complete demo
+ *		...
+ *		Sync with STM32
+ *		_b2 laundry list & dev
+ *		Publish & host 'v1'!
+ *		...
  * 		post both updates to new www rtos page
  *		Disable display of input field names
  * 		Relocate main\CMakeLists.txt & close main\ dir
@@ -46,6 +55,7 @@
 //Standard Library Includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
 
 //SDK Includes
@@ -59,6 +69,8 @@
 
 
 //Project Includes
+#include "utils.h"
+#include "Rtos/freertos.h"				  /* @open 	drop dir from path							  */
 #include "main.h"
 
 
@@ -68,20 +80,8 @@
 
 //-----------------------------------------  Definitions -----------------------------------------//
 
-//Task Definitions
-#define NUM_OF_SPIN_TASKS   (6)
-#define SPIN_ITER           (500000)  	/* Actual ct used will depend on compiler optimization	  */
-#define SPIN_TASK_PRIO      (2)
-
-//Statistic Definitions
-#define STATS_TASK_PRIO     (3)
-#define STATS_TICKS         pdMS_TO_TICKS(1000)
-
 //Error Support
 #define ARRAY_SIZE_OFFSET   (5)   		/* Soln ++ iff ESP_ERR_INVALID_SIZE					      */
-
-//Code Definitions
-#define _nop() 				__asm__ __volatile__("NOP")
 
 
 //-------------------------------------------- Macros --------------------------------------------//
@@ -357,6 +357,7 @@ static void stats_task(void *arg) {
  *  @details    x
  */
 /**************************************************************************************************/
+#define DEMO_IMPORT
 void app_main(void) {
 	
     //Allow other core to finish initialization
@@ -372,22 +373,23 @@ void app_main(void) {
         xTaskCreatePinnedToCore(spin_task, task_names[i], 1024, NULL, SPIN_TASK_PRIO, NULL, tskNO_AFFINITY);
     }
     
-    //Create and start stats task
+    //Create and start stats task @open NO MAGIC NUMS & use struct fot task config info omg
     xTaskCreatePinnedToCore(stats_task, "stats", 4096, NULL, STATS_TASK_PRIO, NULL, tskNO_AFFINITY);
     xSemaphoreGive(sync_stats_task);
 
     //Create and start system task
+	//@open swap to cmsis wrappers & use structs for defs
     xTaskCreatePinnedToCore(sysTask, "system", 4096, NULL, SYSTEM_TASK_PRIO, NULL, tskNO_AFFINITY);
     
     //Create and start data task
-    xTaskCreatePinnedToCore(dataTask, "data", 4096, NULL, SYSTEM_TASK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(dataTask, "data", 4096, NULL, DATA_TASK_PRIO, NULL, tskNO_AFFINITY);
     
     //Create and start display task
-    xTaskCreatePinnedToCore(dispTask, "data", 4096, NULL, SYSTEM_TASK_PRIO, NULL, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(dispTask, "data", 4096, NULL, DISPLAY_TASK_PRIO, NULL, tskNO_AFFINITY);
     
     //Create and start control task
-    xTaskCreatePinnedToCore(ctrlTask, "data", 4096, NULL, SYSTEM_TASK_PRIO, NULL, tskNO_AFFINITY);
-    
+    xTaskCreatePinnedToCore(ctrlTask, "data", 4096, NULL, CONTROL_TASK_PRIO, NULL, tskNO_AFFINITY);
+   
     return;
 }
 
